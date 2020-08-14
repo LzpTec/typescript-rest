@@ -1,7 +1,7 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PATCH = exports.OPTIONS = exports.HEAD = exports.DELETE = exports.PUT = exports.POST = exports.GET = void 0;
-require("@abraham/reflection");
+require("reflect-metadata");
 const metadata_1 = require("../server/model/metadata");
 const server_types_1 = require("../server/model/server-types");
 const server_container_1 = require("../server/server-container");

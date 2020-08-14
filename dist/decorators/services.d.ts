@@ -1,4 +1,4 @@
-import '@abraham/reflection';
+import 'reflect-metadata';
 import { ParserType, ServiceProcessor } from '../server/model/server-types';
 /**
  * A decorator to tell the [[Server]] that a class or a method

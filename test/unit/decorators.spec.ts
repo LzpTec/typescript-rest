@@ -1,10 +1,10 @@
 'use strict';
 
-import '@abraham/reflection';
 import chai from 'chai';
 import { Request } from 'express';
 import 'mocha';
 import proxyquire from 'proxyquire';
+import 'reflect-metadata';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { MethodParam, ParamType, ServiceClass, ServiceMethod } from '../../src/server/model/metadata';

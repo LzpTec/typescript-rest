@@ -1,4 +1,4 @@
-import '@abraham/reflection';
+import 'reflect-metadata';
 /**
  * A decorator to tell the [[Server]] that a method
  * should be called to process HTTP GET requests.

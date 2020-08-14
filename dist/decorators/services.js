@@ -1,7 +1,7 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Abstract = exports.IgnoreNextMiddlewares = exports.BodyType = exports.BodyOptions = exports.Accept = exports.AcceptLanguage = exports.PostProcessor = exports.PreProcessor = exports.Security = exports.Path = void 0;
-require("@abraham/reflection");
+require("reflect-metadata");
 const server_container_1 = require("../server/server-container");
 /**
  * A decorator to tell the [[Server]] that a class or a method

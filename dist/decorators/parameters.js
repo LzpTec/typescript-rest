@@ -1,7 +1,7 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Param = exports.FormParam = exports.CookieParam = exports.HeaderParam = exports.QueryParam = exports.FilesParam = exports.FileParam = exports.PathParam = exports.ContextAccept = exports.ContextLanguage = exports.ContextNext = exports.ContextResponse = exports.ContextRequest = exports.Context = void 0;
-require("@abraham/reflection");
+require("reflect-metadata");
 const metadata_1 = require("../server/model/metadata");
 const server_container_1 = require("../server/server-container");
 /**

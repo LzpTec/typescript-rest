@@ -1,6 +1,6 @@
 'use strict';
 
-import '@abraham/reflection';
+import 'reflect-metadata';
 import { ServiceClass, ServiceMethod } from '../server/model/metadata';
 import { ParserType, ServiceProcessor } from '../server/model/server-types';
 import { ServerContainer } from '../server/server-container';

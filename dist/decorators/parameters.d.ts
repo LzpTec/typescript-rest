@@ -1,4 +1,4 @@
-import '@abraham/reflection';
+import 'reflect-metadata';
 /**
  * A decorator to be used on class properties or on service method arguments
  * to inform that the decorated property or argument should be bound to the
