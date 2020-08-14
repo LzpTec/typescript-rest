@@ -1,5 +1,5 @@
 node_modules
-dist
+# dist
 .vscode
 reports
 .nyc_output

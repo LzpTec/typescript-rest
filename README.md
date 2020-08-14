@@ -33,6 +33,12 @@ To install typescript-rest:
 npm install typescript-rest --save
 ```
 
+From github:
+
+```bash
+npm install https://github.com/LzpTec/typescript-rest.git --save
+```
+
 ## Configuration
 
 Typescript-rest requires the following TypeScript compilation options in your tsconfig.json file:
