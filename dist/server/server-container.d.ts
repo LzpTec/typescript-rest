@@ -21,6 +21,7 @@ export declare class ServerContainer {
     serviceFactory: ServiceFactory;
     paramConverters: Map<Function, ParameterConverter>;
     router: express.Router;
+    resolvedPaths: Map<string, express.Router>;
     private debugger;
     private upload;
     private serverClasses;

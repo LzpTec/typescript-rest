@@ -48,6 +48,7 @@ class ServerContainer {
         this.authenticator = new Map();
         this.serviceFactory = new DefaultServiceFactory();
         this.paramConverters = new Map();
+        this.resolvedPaths = new Map();
         this.debugger = {
             build: debug_1.default('typescript-rest:server-container:build'),
             runtime: debug_1.default('typescript-rest:server-container:runtime')
@@ -70,6 +71,7 @@ class ServerContainer {
         const serviceClass = this.serverClasses.get(target);
         return serviceClass;
     }
+    // HERE
     registerServiceMethod(target, methodName) {
         if (methodName) {
             this.pathsResolved = false;
@@ -235,8 +237,11 @@ class ServerContainer {
             declaredHttpMethods = new Set();
             this.paths.set(resolvedPath, declaredHttpMethods);
         }
-        if (declaredHttpMethods.has(serviceMethod.httpMethod)) {
+        if (declaredHttpMethods.has(serviceMethod.httpMethod) && this.resolvedPaths.get(resolvedPath) === this.router) {
             throw Error(`Duplicated declaration for path [${resolvedPath}], method [${serviceMethod.httpMethod}].`);
+        }
+        else {
+            this.resolvedPaths.set(resolvedPath, this.router);
         }
         declaredHttpMethods.add(serviceMethod.httpMethod);
         serviceMethod.resolvedPath = resolvedPath;

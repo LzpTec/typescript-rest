@@ -42,6 +42,7 @@ export class ServerContainer {
     public serviceFactory: ServiceFactory = new DefaultServiceFactory();
     public paramConverters: Map<Function, ParameterConverter> = new Map<Function, ParameterConverter>();
     public router: express.Router;
+    public resolvedPaths: Map<string, express.Router> = new Map<string, express.Router>();
 
     private debugger = {
         build: debug('typescript-rest:server-container:build'),
@@ -66,6 +67,7 @@ export class ServerContainer {
         return serviceClass;
     }
 
+    // HERE
     public registerServiceMethod(target: Function, methodName: string): ServiceMethod {
         if (methodName) {
             this.pathsResolved = false;
@@ -257,8 +259,10 @@ export class ServerContainer {
             declaredHttpMethods = new Set<HttpMethod>();
             this.paths.set(resolvedPath, declaredHttpMethods);
         }
-        if (declaredHttpMethods.has(serviceMethod.httpMethod)) {
+        if (declaredHttpMethods.has(serviceMethod.httpMethod) && this.resolvedPaths.get(resolvedPath) === this.router) {
             throw Error(`Duplicated declaration for path [${resolvedPath}], method [${serviceMethod.httpMethod}].`);
+        } else {
+            this.resolvedPaths.set(resolvedPath, this.router);
         }
         declaredHttpMethods.add(serviceMethod.httpMethod);
         serviceMethod.resolvedPath = resolvedPath;
