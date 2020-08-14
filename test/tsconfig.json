@@ -4,7 +4,7 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "lib": [
-            "es6"
+            "ES2018"
         ],
         "module": "commonjs",
         "newLine": "LF",
@@ -17,7 +17,7 @@
         "noUnusedLocals": true,
         "sourceMap": true,
         "strictNullChecks": false,
-        "target": "es5"
+        "target": "ES2018"
     },
     "include": [
         "**/*.ts"
