@@ -1,7 +1,6 @@
 'use strict';
 
-import * as _ from 'lodash';
-import 'reflect-metadata';
+import '@abraham/reflection';
 import { FileParam, MethodParam, ParamType, ServiceMethod } from '../server/model/metadata';
 import { HttpMethod } from '../server/model/server-types';
 import { ServerContainer } from '../server/server-container';

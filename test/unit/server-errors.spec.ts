@@ -1,7 +1,6 @@
 'use strict';
 
-import * as chai from 'chai';
-import * as _ from 'lodash';
+import chai from 'chai';
 import 'mocha';
 import { Errors } from '../../src/typescript-rest';
 

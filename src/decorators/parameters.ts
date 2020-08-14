@@ -1,7 +1,6 @@
 'use strict';
 
-import * as _ from 'lodash';
-import 'reflect-metadata';
+import '@abraham/reflection';
 import { MethodParam, ParamType, ServiceClass, ServiceMethod } from '../server/model/metadata';
 import { ServerContainer } from '../server/server-container';
 
@@ -381,7 +380,7 @@ class ParameterDecorator {
 
     public decorateParameterOrProperty(args: Array<any>) {
         if (!this.nameRequired || this.name) {
-            args = _.without(args, undefined);
+            args = args.filter(x => typeof x !== "undefined");
             if (args.length < 3 || typeof args[2] === 'undefined') {
                 return this.decorateProperty(args[0], args[1]);
             } else if (args.length === 3 && typeof args[2] === 'number') {
@@ -401,7 +400,7 @@ class ParameterDecorator {
     private decorateParameter(target: Object, propertyKey: string, parameterIndex: number) {
         const serviceMethod: ServiceMethod = ServerContainer.get().registerServiceMethod(target.constructor, propertyKey);
         if (serviceMethod) { // does not intercept constructor
-            const paramTypes = Reflect.getOwnMetadata('design:paramtypes', target, propertyKey);
+            const paramTypes = Reflect.getOwnMetadata('design:paramtypes', target, propertyKey) as any;
 
             while (paramTypes && serviceMethod.parameters.length < paramTypes.length) {
                 serviceMethod.parameters.push(new MethodParam(null,

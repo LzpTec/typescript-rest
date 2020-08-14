@@ -4,11 +4,11 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "lib": [
-            "es6",
-            "dom"
+            "es6"
         ],
         "module": "commonjs",
         "newLine": "LF",
+        "esModuleInterop": true,
         "noFallthroughCasesInSwitch": true,
         "noImplicitAny": true,
         "noImplicitReturns": true,

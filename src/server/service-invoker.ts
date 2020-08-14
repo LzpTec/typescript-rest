@@ -1,8 +1,7 @@
 'use strict';
 
-import * as debug from 'debug';
+import debug from 'debug';
 import * as express from 'express';
-import * as _ from 'lodash';
 import { Errors } from '../typescript-rest';
 import { ServiceClass, ServiceMethod, ServiceProperty } from './model/metadata';
 import { DownloadBinaryData, DownloadResource, NoResponse } from './model/return-types';
@@ -20,8 +19,9 @@ export class ServiceInvoker {
     constructor(serviceClass: ServiceClass, serviceMethod: ServiceMethod) {
         this.serviceClass = serviceClass;
         this.serviceMethod = serviceMethod;
-        this.preProcessors = _.union(serviceMethod.preProcessors, serviceClass.preProcessors);
-        this.postProcessors = _.union(serviceMethod.postProcessors, serviceClass.postProcessors);
+
+        this.preProcessors = [...new Set([...serviceMethod.preProcessors, ...serviceClass.preProcessors])];
+        this.postProcessors = [...new Set([...serviceMethod.postProcessors, ...serviceClass.postProcessors])];
     }
 
     public async callService(context: ServiceContext) {
@@ -69,7 +69,8 @@ export class ServiceInvoker {
         if (this.debugger.enabled) {
             this.debugger('Invoking service method <%s> with params: %j', this.serviceMethod.name, args);
         }
-        const result = toCall.apply(serviceObject, args);
+
+        const result = await toCall.apply(serviceObject, args);
         if (this.postProcessors.length) {
             await this.runPostProcessors(context);
         }

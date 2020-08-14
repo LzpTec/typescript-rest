@@ -1,12 +1,11 @@
 'use strict';
 
 import * as chai from 'chai';
-import * as express from 'express';
+import express from 'express';
 import * as jwt from 'jsonwebtoken';
-import * as _ from 'lodash';
 import 'mocha';
 import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
-import * as request from 'request';
+import request from 'request';
 import { Context, GET, PassportAuthenticator, Path, POST, PUT, Security, Server, ServiceContext } from '../../src/typescript-rest';
 
 const expect = chai.expect;

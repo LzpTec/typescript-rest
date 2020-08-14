@@ -1,12 +1,11 @@
 'use strict';
 
-import * as debug from 'debug';
+import debug from 'debug';
 import * as express from 'express';
 import * as fs from 'fs-extra';
-import * as _ from 'lodash';
 import 'multer';
 import * as path from 'path';
-import * as YAML from 'yamljs';
+import YAML from 'yamljs';
 import {
     FileLimits, HttpMethod, ParameterConverter,
     ServiceAuthenticator, ServiceFactory
@@ -51,8 +50,8 @@ export class Server {
                 cwd: baseDir
             });
 
-            _.values(loadedModules).forEach(serviceModule => {
-                _.values(serviceModule)
+            Object.values(loadedModules).forEach(serviceModule => {
+                Object.values(serviceModule)
                     .filter((service: Function) => typeof service === 'function')
                     .forEach((service: Function) => {
                         importedTypes.push(service);
@@ -114,7 +113,7 @@ export class Server {
             let factory: ServiceFactory;
             if (typeof serviceFactory === 'string') {
                 const mod = require(serviceFactory);
-                factory = mod.default ? mod.default : mod;
+                factory = mod.default ?? mod;
             } else {
                 factory = serviceFactory as ServiceFactory;
             }
@@ -283,24 +282,27 @@ export class Server {
 
     private static loadSwaggerDocument(options: SwaggerOptions) {
         let swaggerDocument: any;
-        if (_.endsWith(options.filePath, '.yml') || _.endsWith(options.filePath, '.yaml')) {
+        if (options.filePath && (options.filePath.endsWith('.yml') || options.filePath.endsWith('.yaml'))) {
             swaggerDocument = YAML.load(options.filePath);
-        }
-        else {
+        } else {
             swaggerDocument = fs.readJSONSync(options.filePath);
         }
         serverDebugger('Loaded swagger configurations: %j', swaggerDocument);
         return swaggerDocument;
     }
 
+
     private static getOptions(options: SwaggerOptions) {
-        options = _.defaults(options, {
+        const def = {
             endpoint: 'api-docs',
             filePath: './swagger.json'
-        });
-        if (_.startsWith(options.filePath, '.')) {
+        };
+        options = { ...def, ...options };
+
+        if (options.filePath && options.filePath.startsWith('.')) {
             options.filePath = path.join(process.cwd(), options.filePath);
         }
+
         return options;
     }
 }

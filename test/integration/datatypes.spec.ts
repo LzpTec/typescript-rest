@@ -1,11 +1,10 @@
 'use strict';
 
 import * as chai from 'chai';
-import * as express from 'express';
+import express from 'express';
 import * as fs from 'fs';
-import * as _ from 'lodash';
 import 'mocha';
-import * as request from 'request';
+import request from 'request';
 import { Container } from 'typescript-ioc';
 import {
     BodyOptions, BodyType, Context, ContextNext,
@@ -150,7 +149,7 @@ export class TestParamsService {
     public testUploadFile(@FileParam('myFile') file: Express.Multer.File,
         @FormParam('myField') myField: string): boolean {
         return (file
-            && (_.startsWith(file.buffer.toString(), '\'use strict\';'))
+            && (file.buffer.toString().startsWith('\'use strict\';'))
             && (myField === 'my_value'));
     }
 
@@ -430,7 +429,7 @@ describe('Data Types Tests', () => {
                 url: 'http://localhost:5674/testparams/download'
             }, (error, response, body) => {
                 expect(response.headers['content-type']).to.eq('application/javascript');
-                expect(_.startsWith(body.toString(), '\'use strict\';')).to.eq(true);
+                expect(body.toString().startsWith('\'use strict\';')).to.eq(true);
                 done();
             });
         });
@@ -438,7 +437,7 @@ describe('Data Types Tests', () => {
             request({
                 url: 'http://localhost:5674/testparams/download/ref'
             }, (error, response, body) => {
-                expect(_.startsWith(body.toString(), '\'use strict\';')).to.eq(true);
+                expect(body.toString().startsWith('\'use strict\';')).to.eq(true);
                 done();
             });
         });

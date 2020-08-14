@@ -1,12 +1,11 @@
 'use strict';
 
-import * as chai from 'chai';
-import * as _ from 'lodash';
+import chai from 'chai';
 import 'mocha';
-import * as path from 'path';
-import * as proxyquire from 'proxyquire';
-import * as sinon from 'sinon';
-import * as sinonChai from 'sinon-chai';
+import path from 'path';
+import proxyquire from 'proxyquire';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 
 chai.use(sinonChai);
 const expect = chai.expect;

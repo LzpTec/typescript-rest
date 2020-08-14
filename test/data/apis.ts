@@ -1,7 +1,4 @@
 'use strict';
-
-import * as _ from 'lodash';
-
 import { GET, Path } from '../../src/typescript-rest';
 
 

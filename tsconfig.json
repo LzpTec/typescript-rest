@@ -4,11 +4,11 @@
         "experimentalDecorators": true,
         "emitDecoratorMetadata": true,
         "lib": [
-            "es6",
-            "dom"
+            "ES2018"
         ],
         "module": "commonjs",
         "newLine": "LF",
+        "esModuleInterop": true,
         "noFallthroughCasesInSwitch": true,
         "noImplicitAny": true,
         "noImplicitReturns": true,
@@ -18,7 +18,7 @@
         "outDir": "dist",
         "sourceMap": true,
         "strictNullChecks": false,
-        "target": "es6"
+        "target": "ES2018"
     },
     "include": [
         "src/**/*.ts"

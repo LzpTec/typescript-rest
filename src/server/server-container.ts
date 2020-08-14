@@ -2,11 +2,11 @@
 
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
-import * as debug from 'debug';
+import debug from 'debug';
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
-import * as _ from 'lodash';
-import * as multer from 'multer';
+import klona from 'klona';
+import multer from 'multer';
 import * as Errors from './model/errors';
 import { ServiceClass, ServiceMethod } from './model/metadata';
 import {
@@ -46,7 +46,7 @@ export class ServerContainer {
         build: debug('typescript-rest:server-container:build'),
         runtime: debug('typescript-rest:server-container:runtime')
     };
-    private upload: multer.Instance;
+    private upload: ReturnType<typeof multer>;
     private serverClasses: Map<Function, ServiceClass> = new Map<Function, ServiceClass>();
     private paths: Map<string, Set<HttpMethod>> = new Map<string, Set<HttpMethod>>();
     private pathsResolved: boolean = false;
@@ -125,22 +125,22 @@ export class ServerContainer {
         if (parentClassData) {
             if (parentClassData.methods) {
                 parentClassData.methods.forEach((value, key) => {
-                    classData.methods.set(key, _.cloneDeep(value));
+                    classData.methods.set(key, klona(value));
                 });
             }
 
             if (parentClassData.properties) {
                 parentClassData.properties.forEach((value, key) => {
-                    classData.properties.set(key, _.cloneDeep(value));
+                    classData.properties.set(key, klona(value));
                 });
             }
 
             if (parentClassData.languages) {
-                classData.languages = _.union(classData.languages, parentClassData.languages);
+                classData.languages = [...new Set([...classData.languages, ...parentClassData.languages])];
             }
 
             if (parentClassData.accepts) {
-                classData.accepts = _.union(classData.accepts, parentClassData.accepts);
+                classData.accepts = [...new Set([...classData.accepts, ...parentClassData.accepts])];
             }
         }
         this.debugger.build('Service class registered with the given metadata: %o', classData);
@@ -215,7 +215,7 @@ export class ServerContainer {
         serviceMethod: ServiceMethod): void {
         this.debugger.build('Resolving the list of acceptable languages for method %s', serviceMethod.name);
 
-        const resolvedLanguages = _.union(serviceClass.languages, serviceMethod.languages);
+        const resolvedLanguages = [...new Set([...serviceClass.languages, ...serviceMethod.languages])];
         if (resolvedLanguages.length > 0) {
             serviceMethod.resolvedLanguages = resolvedLanguages;
         }
@@ -225,7 +225,7 @@ export class ServerContainer {
         serviceMethod: ServiceMethod): void {
 
         this.debugger.build('Resolving the list of acceptable types for method %s', serviceMethod.name);
-        const resolvedAccepts = _.union(serviceClass.accepts, serviceMethod.accepts);
+        const resolvedAccepts = [...new Set([...serviceClass.accepts, ...serviceMethod.accepts])];
         if (resolvedAccepts.length > 0) {
             serviceMethod.resolvedAccepts = resolvedAccepts;
         }
@@ -237,14 +237,14 @@ export class ServerContainer {
         this.debugger.build('Resolving the path for method %s', serviceMethod.name);
 
         const classPath: string = serviceClass.path ? serviceClass.path.trim() : '';
-        let resolvedPath = _.startsWith(classPath, '/') ? classPath : '/' + classPath;
-        if (_.endsWith(resolvedPath, '/')) {
+        let resolvedPath = classPath.startsWith('/') ? classPath : '/' + classPath;
+        if (resolvedPath.endsWith('/')) {
             resolvedPath = resolvedPath.slice(0, resolvedPath.length - 1);
         }
 
         if (serviceMethod.path) {
             const methodPath: string = serviceMethod.path.trim();
-            resolvedPath = resolvedPath + (_.startsWith(methodPath, '/') ? methodPath : '/' + methodPath);
+            resolvedPath = resolvedPath + (methodPath.startsWith('/') ? methodPath : '/' + methodPath);
         }
 
         let declaredHttpMethods: Set<HttpMethod> = this.paths.get(resolvedPath);
@@ -289,7 +289,7 @@ export class ServerContainer {
         });
     }
 
-    private getUploader(): multer.Instance {
+    private getUploader(): ReturnType<typeof multer> {
         if (!this.upload) {
             const options: multer.Options = {};
             if (this.fileDest) {
@@ -326,7 +326,7 @@ export class ServerContainer {
 
     private buildSecurityMiddlewares(serviceClass: ServiceClass, serviceMethod: ServiceMethod) {
         const result: Array<express.RequestHandler> = new Array<express.RequestHandler>();
-        let roles: Array<string> = _.compact(_.union(serviceMethod.roles, serviceClass.roles));
+        let roles = [...new Set([...serviceClass.roles, ...serviceMethod.roles])].filter(Boolean);
         const authenticatorName: string = serviceMethod.authenticator || serviceClass.authenticator;
         if (this.authenticator && authenticatorName && roles.length) {
             this.debugger.build('Registering an authenticator middleware <%s> for method <%s>.', authenticatorName, serviceMethod.name);
@@ -472,7 +472,7 @@ export class ServerContainer {
             args.push({ decode: this.cookiesDecoder });
         }
         this.debugger.build('Creating cookie parser with options %j.', args);
-        const middleware = cookieParser.apply(this, args);
+        const middleware = cookieParser.default.apply(this, args);
         return middleware;
     }
 }

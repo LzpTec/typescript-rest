@@ -1,13 +1,12 @@
 'use strict';
 
-import * as chai from 'chai';
+import chai from 'chai';
 import { RequestHandler } from 'express-serve-static-core';
-import * as _ from 'lodash';
 import 'mocha';
 import { AuthenticateOptions, Strategy } from 'passport';
-import * as proxyquire from 'proxyquire';
-import * as sinon from 'sinon';
-import * as sinonChai from 'sinon-chai';
+import proxyquire from 'proxyquire';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 import { wait } from 'test-wait';
 
 chai.use(sinonChai);

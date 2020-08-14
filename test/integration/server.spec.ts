@@ -1,10 +1,9 @@
 'use strict';
 
 import * as chai from 'chai';
-import * as express from 'express';
-import * as _ from 'lodash';
+import express from 'express';
 import 'mocha';
-import * as request from 'request';
+import request from 'request';
 import {
     Accept, AcceptLanguage, ContextAccept, ContextLanguage, GET,
     Path, POST, PUT, Return, Server

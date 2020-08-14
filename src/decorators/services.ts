@@ -1,7 +1,6 @@
 'use strict';
 
-import * as _ from 'lodash';
-import 'reflect-metadata';
+import '@abraham/reflection';
 import { ServiceClass, ServiceMethod } from '../server/model/metadata';
 import { ParserType, ServiceProcessor } from '../server/model/server-types';
 import { ServerContainer } from '../server/server-container';
@@ -75,7 +74,7 @@ export function Path(path: string) {
  * ```
  */
 export function Security(roles?: string | Array<string>, name?: string) {
-    roles = _.castArray(roles || '*');
+    roles = roles ? Array.isArray(roles) ? roles : [roles] : ['*'];
     return new ServiceDecorator('Security')
         .withProperty('roles', roles)
         .withProperty('authenticator', name || 'default')
@@ -167,7 +166,7 @@ export function PostProcessor(postprocessor: ServiceProcessor) {
  * If the language requested is not supported, a status code 406 returned
  */
 export function AcceptLanguage(...languages: Array<string>) {
-    languages = _.compact(languages);
+    languages = languages.filter(Boolean);
     return new AcceptServiceDecorator('AcceptLanguage').withArrayProperty('languages', languages, true)
         .createDecorator();
 }
@@ -193,7 +192,7 @@ export function AcceptLanguage(...languages: Array<string>) {
  * If the mime type requested is not supported, a status code 406 returned
  */
 export function Accept(...accepts: Array<string>) {
-    accepts = _.compact(accepts);
+    accepts = accepts.filter(Boolean);
     return new AcceptServiceDecorator('Accept').withArrayProperty('accepts', accepts, true)
         .createDecorator();
 }
@@ -246,7 +245,7 @@ export function IgnoreNextMiddlewares(...args: Array<any>) {
  * PeopleService exposes the getPeople method.
  */
 export function Abstract(...args: Array<any>) {
-    args = _.without(args, undefined);
+    args = args.filter(x => typeof x !== "undefined");
     if (args.length === 1) {
         const classData: ServiceClass = ServerContainer.get().registerServiceClass(args[0]);
         classData.isAbstract = true;
@@ -293,7 +292,7 @@ class ServiceDecorator {
     }
 
     public decorateTypeOrMethod(args: Array<any>) {
-        args = _.without(args, undefined);
+    args = args.filter(x => typeof x !== "undefined");
         if (args.length === 1) {
             this.decorateType(args[0]);
         } else if (args.length === 3 && typeof args[2] === 'object') {
@@ -361,7 +360,7 @@ class AcceptServiceDecorator extends ServiceDecorator {
         this.properties.push({
             checkRequired: () => required && (!value || !value.length),
             process: (target: any) => {
-                target[property] = _.union(target[property], value);
+                target[property] = [...new Set([...(target[property] || []), ...value])];
             },
             property: property,
             required: required,

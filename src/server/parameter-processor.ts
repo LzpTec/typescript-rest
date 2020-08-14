@@ -1,6 +1,6 @@
 'use strict';
 
-import * as debug from 'debug';
+import debug from 'debug';
 import { Errors } from '../typescript-rest';
 import { ParamType, ServiceProperty } from './model/metadata';
 import { ParameterConverter, ServiceContext } from './model/server-types';
@@ -72,7 +72,7 @@ export class ParameterProcessor {
         return parameterMapper;
     }
 
-    private convertType(paramValue: string | boolean, paramType: Function): any {
+    private convertType(paramValue: string | boolean | any, paramType: Function): any {
         const serializedType = paramType['name'];
         this.debugger.runtime('Processing parameter. received type: %s, received value:', serializedType, paramValue);
         switch (serializedType) {

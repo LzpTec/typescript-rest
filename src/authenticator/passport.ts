@@ -1,6 +1,5 @@
 'use strict';
 import * as express from 'express';
-import * as _ from 'lodash';
 import * as passport from 'passport';
 import { ServiceAuthenticator } from '../server/model/server-types';
 
@@ -29,12 +28,14 @@ export class PassportAuthenticator implements ServiceAuthenticator {
 
     public getRoles(req: express.Request): Array<string> {
         const roleKey = this.options.rolesKey || 'roles';
-        return _.castArray(_.get(req.user, roleKey, []));
+        const roles: any = req.user ? (req.user as any)[roleKey] ?? [] : [];
+        return Array.isArray(roles) ? roles : [roles];
     }
 
     public initialize(router: express.Router): void {
         router.use(passport.initialize());
-        const useSession = _.get(this.options, 'authOptions.session', true);
+
+        const useSession = this.options.authOptions?.session ?? true;
         if (useSession) {
             router.use(passport.session());
             if (this.options.serializeUser && this.options.deserializeUser) {
