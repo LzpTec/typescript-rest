@@ -7,6 +7,7 @@ import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
 import klona from 'klona';
 import multer from 'multer';
+import { union } from '../utils/union';
 import * as Errors from './model/errors';
 import { ServiceClass, ServiceMethod } from './model/metadata';
 import {
@@ -136,11 +137,13 @@ export class ServerContainer {
             }
 
             if (parentClassData.languages) {
-                classData.languages = [...new Set([...(classData.languages || []), ...(parentClassData.languages || [])])];
+                classData.languages = union(classData.languages, parentClassData.languages);
+                // classData.languages = [...new Set([...(classData.languages || []), ...(parentClassData.languages || [])])];
             }
 
             if (parentClassData.accepts) {
-                classData.accepts = [...new Set([...(classData.accepts || []), ...(parentClassData.accepts || [])])];
+                classData.accepts = union(classData.accepts, parentClassData.accepts);
+                // classData.accepts = [...new Set([...(classData.accepts || []), ...(parentClassData.accepts || [])])];
             }
         }
         this.debugger.build('Service class registered with the given metadata: %o', classData);
@@ -215,7 +218,8 @@ export class ServerContainer {
         serviceMethod: ServiceMethod): void {
         this.debugger.build('Resolving the list of acceptable languages for method %s', serviceMethod.name);
 
-        const resolvedLanguages = [...new Set([...(serviceClass.languages || []), ...(serviceMethod.languages || [])])];
+        const resolvedLanguages = union(serviceClass.languages, serviceMethod.languages);
+        // const resolvedLanguages = [...new Set([...(serviceClass.languages || []), ...(serviceMethod.languages || [])])];
         if (resolvedLanguages.length > 0) {
             serviceMethod.resolvedLanguages = resolvedLanguages;
         }
@@ -225,7 +229,8 @@ export class ServerContainer {
         serviceMethod: ServiceMethod): void {
 
         this.debugger.build('Resolving the list of acceptable types for method %s', serviceMethod.name);
-        const resolvedAccepts = [...new Set([...(serviceClass.accepts || []), ...(serviceMethod.accepts || [])])];
+        const resolvedAccepts = union(serviceClass.accepts, serviceMethod.accepts);
+        // const resolvedAccepts = [...new Set([...(serviceClass.accepts || []), ...(serviceMethod.accepts || [])])];
         if (resolvedAccepts.length > 0) {
             serviceMethod.resolvedAccepts = resolvedAccepts;
         }
@@ -326,7 +331,8 @@ export class ServerContainer {
 
     private buildSecurityMiddlewares(serviceClass: ServiceClass, serviceMethod: ServiceMethod) {
         const result: Array<express.RequestHandler> = new Array<express.RequestHandler>();
-        let roles = [...new Set([...(serviceClass.roles || []), ...(serviceMethod.roles || [])])].filter(Boolean);
+        let roles = union(serviceClass.roles, serviceMethod.roles).filter(Boolean);
+        // let roles = [...new Set([...(serviceClass.roles || []), ...(serviceMethod.roles || [])])].filter(Boolean);
         const authenticatorName: string = serviceMethod.authenticator || serviceClass.authenticator;
         if (this.authenticator && authenticatorName && roles.length) {
             this.debugger.build('Registering an authenticator middleware <%s> for method <%s>.', authenticatorName, serviceMethod.name);

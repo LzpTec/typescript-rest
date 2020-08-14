@@ -4,6 +4,7 @@ import 'reflect-metadata';
 import { ServiceClass, ServiceMethod } from '../server/model/metadata';
 import { ParserType, ServiceProcessor } from '../server/model/server-types';
 import { ServerContainer } from '../server/server-container';
+import { union } from '../utils/union';
 
 /**
  * A decorator to tell the [[Server]] that a class or a method
@@ -360,7 +361,8 @@ class AcceptServiceDecorator extends ServiceDecorator {
         this.properties.push({
             checkRequired: () => required && (!value || !value.length),
             process: (target: any) => {
-                target[property] = [...new Set([...(target[property] || []), ...(value || [])])];
+                target[property] = union(target[property], value);
+                // target[property] = [...new Set([...(target[property] || []), ...(value || [])])];
             },
             property: property,
             required: required,

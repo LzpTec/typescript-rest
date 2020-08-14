@@ -28,6 +28,7 @@ const cookieParser = __importStar(require("cookie-parser"));
 const debug_1 = __importDefault(require("debug"));
 const klona_1 = __importDefault(require("klona"));
 const multer_1 = __importDefault(require("multer"));
+const union_1 = require("../utils/union");
 const Errors = __importStar(require("./model/errors"));
 const metadata_1 = require("./model/metadata");
 const server_types_1 = require("./model/server-types");
@@ -134,10 +135,12 @@ class ServerContainer {
                 });
             }
             if (parentClassData.languages) {
-                classData.languages = [...new Set([...(classData.languages || []), ...(parentClassData.languages || [])])];
+                classData.languages = union_1.union(classData.languages, parentClassData.languages);
+                // classData.languages = [...new Set([...(classData.languages || []), ...(parentClassData.languages || [])])];
             }
             if (parentClassData.accepts) {
-                classData.accepts = [...new Set([...(classData.accepts || []), ...(parentClassData.accepts || [])])];
+                classData.accepts = union_1.union(classData.accepts, parentClassData.accepts);
+                // classData.accepts = [...new Set([...(classData.accepts || []), ...(parentClassData.accepts || [])])];
             }
         }
         this.debugger.build('Service class registered with the given metadata: %o', classData);
@@ -202,14 +205,16 @@ class ServerContainer {
     }
     resolveLanguages(serviceClass, serviceMethod) {
         this.debugger.build('Resolving the list of acceptable languages for method %s', serviceMethod.name);
-        const resolvedLanguages = [...new Set([...(serviceClass.languages || []), ...(serviceMethod.languages || [])])];
+        const resolvedLanguages = union_1.union(serviceClass.languages, serviceMethod.languages);
+        // const resolvedLanguages = [...new Set([...(serviceClass.languages || []), ...(serviceMethod.languages || [])])];
         if (resolvedLanguages.length > 0) {
             serviceMethod.resolvedLanguages = resolvedLanguages;
         }
     }
     resolveAccepts(serviceClass, serviceMethod) {
         this.debugger.build('Resolving the list of acceptable types for method %s', serviceMethod.name);
-        const resolvedAccepts = [...new Set([...(serviceClass.accepts || []), ...(serviceMethod.accepts || [])])];
+        const resolvedAccepts = union_1.union(serviceClass.accepts, serviceMethod.accepts);
+        // const resolvedAccepts = [...new Set([...(serviceClass.accepts || []), ...(serviceMethod.accepts || [])])];
         if (resolvedAccepts.length > 0) {
             serviceMethod.resolvedAccepts = resolvedAccepts;
         }
@@ -301,7 +306,8 @@ class ServerContainer {
     }
     buildSecurityMiddlewares(serviceClass, serviceMethod) {
         const result = new Array();
-        let roles = [...new Set([...(serviceClass.roles || []), ...(serviceMethod.roles || [])])].filter(Boolean);
+        let roles = union_1.union(serviceClass.roles, serviceMethod.roles).filter(Boolean);
+        // let roles = [...new Set([...(serviceClass.roles || []), ...(serviceMethod.roles || [])])].filter(Boolean);
         const authenticatorName = serviceMethod.authenticator || serviceClass.authenticator;
         if (this.authenticator && authenticatorName && roles.length) {
             this.debugger.build('Registering an authenticator middleware <%s> for method <%s>.', authenticatorName, serviceMethod.name);

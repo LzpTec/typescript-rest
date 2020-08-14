@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Abstract = exports.IgnoreNextMiddlewares = exports.BodyType = exports.BodyOptions = exports.Accept = exports.AcceptLanguage = exports.PostProcessor = exports.PreProcessor = exports.Security = exports.Path = void 0;
 require("reflect-metadata");
 const server_container_1 = require("../server/server-container");
+const union_1 = require("../utils/union");
 /**
  * A decorator to tell the [[Server]] that a class or a method
  * should be bound to a given path.
@@ -340,7 +341,8 @@ class AcceptServiceDecorator extends ServiceDecorator {
         this.properties.push({
             checkRequired: () => required && (!value || !value.length),
             process: (target) => {
-                target[property] = [...new Set([...(target[property] || []), ...(value || [])])];
+                target[property] = union_1.union(target[property], value);
+                // target[property] = [...new Set([...(target[property] || []), ...(value || [])])];
             },
             property: property,
             required: required,
