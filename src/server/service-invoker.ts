@@ -20,8 +20,8 @@ export class ServiceInvoker {
         this.serviceClass = serviceClass;
         this.serviceMethod = serviceMethod;
 
-        this.preProcessors = [...new Set([...serviceMethod.preProcessors, ...serviceClass.preProcessors])];
-        this.postProcessors = [...new Set([...serviceMethod.postProcessors, ...serviceClass.postProcessors])];
+        this.preProcessors = [...new Set([...(serviceMethod.preProcessors || []), ...(serviceClass.preProcessors || [])])];
+        this.postProcessors = [...new Set([...(serviceMethod.postProcessors || []), ...(serviceClass.postProcessors || [])])];
     }
 
     public async callService(context: ServiceContext) {

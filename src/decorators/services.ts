@@ -360,7 +360,7 @@ class AcceptServiceDecorator extends ServiceDecorator {
         this.properties.push({
             checkRequired: () => required && (!value || !value.length),
             process: (target: any) => {
-                target[property] = [...new Set([...(target[property] || []), ...value])];
+                target[property] = [...new Set([...(target[property] || []), ...(value || [])])];
             },
             property: property,
             required: required,

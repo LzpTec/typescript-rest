@@ -15,8 +15,8 @@ class ServiceInvoker {
         this.debugger = debug_1.default('typescript-rest:service-invoker:runtime');
         this.serviceClass = serviceClass;
         this.serviceMethod = serviceMethod;
-        this.preProcessors = [...new Set([...serviceMethod.preProcessors, ...serviceClass.preProcessors])];
-        this.postProcessors = [...new Set([...serviceMethod.postProcessors, ...serviceClass.postProcessors])];
+        this.preProcessors = [...new Set([...(serviceMethod.preProcessors || []), ...(serviceClass.preProcessors || [])])];
+        this.postProcessors = [...new Set([...(serviceMethod.postProcessors || []), ...(serviceClass.postProcessors || [])])];
     }
     async callService(context) {
         try {
