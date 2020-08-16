@@ -26,7 +26,7 @@ exports.ServerContainer = exports.DefaultServiceFactory = void 0;
 const bodyParser = __importStar(require("body-parser"));
 const cookieParser = __importStar(require("cookie-parser"));
 const debug_1 = __importDefault(require("debug"));
-const klona_1 = require("klona");
+const full_1 = require("klona/full");
 const multer_1 = __importDefault(require("multer"));
 const union_1 = require("../utils/union");
 const Errors = __importStar(require("./model/errors"));
@@ -128,12 +128,12 @@ class ServerContainer {
         if (parentClassData) {
             if (parentClassData.methods) {
                 parentClassData.methods.forEach((value, key) => {
-                    classData.methods.set(key, klona_1.klona(value));
+                    classData.methods.set(key, full_1.klona(value));
                 });
             }
             if (parentClassData.properties) {
                 parentClassData.properties.forEach((value, key) => {
-                    classData.properties.set(key, klona_1.klona(value));
+                    classData.properties.set(key, full_1.klona(value));
                 });
             }
             if (parentClassData.languages) {

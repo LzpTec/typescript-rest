@@ -5,7 +5,7 @@ import * as cookieParser from 'cookie-parser';
 import debug from 'debug';
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
-import { klona } from 'klona';
+import { klona } from 'klona/full';
 import multer from 'multer';
 import { union } from '../utils/union';
 import * as Errors from './model/errors';
