@@ -26,7 +26,7 @@ exports.ServerContainer = exports.DefaultServiceFactory = void 0;
 const bodyParser = __importStar(require("body-parser"));
 const cookieParser = __importStar(require("cookie-parser"));
 const debug_1 = __importDefault(require("debug"));
-const klona_1 = __importDefault(require("klona"));
+const klona_1 = require("klona");
 const multer_1 = __importDefault(require("multer"));
 const union_1 = require("../utils/union");
 const Errors = __importStar(require("./model/errors"));
@@ -128,21 +128,19 @@ class ServerContainer {
         if (parentClassData) {
             if (parentClassData.methods) {
                 parentClassData.methods.forEach((value, key) => {
-                    classData.methods.set(key, klona_1.default(value));
+                    classData.methods.set(key, klona_1.klona(value));
                 });
             }
             if (parentClassData.properties) {
                 parentClassData.properties.forEach((value, key) => {
-                    classData.properties.set(key, klona_1.default(value));
+                    classData.properties.set(key, klona_1.klona(value));
                 });
             }
             if (parentClassData.languages) {
                 classData.languages = union_1.union(classData.languages, parentClassData.languages);
-                // classData.languages = [...new Set([...(classData.languages || []), ...(parentClassData.languages || [])])];
             }
             if (parentClassData.accepts) {
                 classData.accepts = union_1.union(classData.accepts, parentClassData.accepts);
-                // classData.accepts = [...new Set([...(classData.accepts || []), ...(parentClassData.accepts || [])])];
             }
         }
         this.debugger.build('Service class registered with the given metadata: %o', classData);

@@ -5,7 +5,7 @@ import * as cookieParser from 'cookie-parser';
 import debug from 'debug';
 import * as express from 'express';
 import { NextFunction, Request, Response } from 'express';
-import klona from 'klona';
+import { klona } from 'klona';
 import multer from 'multer';
 import { union } from '../utils/union';
 import * as Errors from './model/errors';
@@ -140,12 +140,10 @@ export class ServerContainer {
 
             if (parentClassData.languages) {
                 classData.languages = union(classData.languages, parentClassData.languages);
-                // classData.languages = [...new Set([...(classData.languages || []), ...(parentClassData.languages || [])])];
             }
 
             if (parentClassData.accepts) {
                 classData.accepts = union(classData.accepts, parentClassData.accepts);
-                // classData.accepts = [...new Set([...(classData.accepts || []), ...(parentClassData.accepts || [])])];
             }
         }
         this.debugger.build('Service class registered with the given metadata: %o', classData);
