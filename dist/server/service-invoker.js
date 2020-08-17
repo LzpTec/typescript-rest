@@ -169,11 +169,10 @@ class ServiceInvoker {
                         context.response.sendStatus(204);
                     }
                     break;
-                case null:
-                    context.response.send(value);
-                    break;
                 default:
-                    await this.sendComplexValue(context, value);
+                    value === null
+                        ? context.response.send(value)
+                        : await this.sendComplexValue(context, value);
             }
         }
         else {
