@@ -69,11 +69,7 @@ export class ServiceInvoker {
         if (this.debugger.enabled) {
             this.debugger('Invoking service method <%s> with params: %j', this.serviceMethod.name, args);
         }
-        const result = await toCall.apply(serviceObject, args);
-        if (this.postProcessors.length) {
-            await this.runPostProcessors(context);
-        }
-        this.processResponseHeaders(context);
+        const result = toCall.apply(serviceObject, args);
         await this.sendValue(result, context);
     }
 
@@ -171,26 +167,31 @@ export class ServiceInvoker {
     }
 
     private async sendValue(value: any, context: ServiceContext) {
+        if (value === NoResponse || typeof value === "number" || typeof value === "string" || typeof value === "boolean" || typeof value === "undefined" || value === null) {
+            if (this.postProcessors.length) {
+                await this.runPostProcessors(context);
+            }
+            this.processResponseHeaders(context);
+        }
+
         if (value !== NoResponse) {
             this.debugger('Sending response value: %o', value);
+
             switch (typeof value) {
                 case 'number':
+                case 'boolean':
                     context.response.send(value.toString());
                     break;
                 case 'string':
                     context.response.send(value);
                     break;
-                case 'boolean':
-                    context.response.send(value.toString());
-                    break;
                 case 'undefined':
-                    if (!context.response.headersSent) {
+                    if (!context.response.headersSent)
                         context.response.sendStatus(204);
-                    }
                     break;
                 default:
-                    value === null 
-                        ? context.response.send(value) 
+                    value === null
+                        ? context.response.send(value)
                         : await this.sendComplexValue(context, value);
             }
         } else {
