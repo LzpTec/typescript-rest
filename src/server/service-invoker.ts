@@ -51,6 +51,7 @@ export class ServiceInvoker {
     }
 
     private async runPostProcessors(context: ServiceContext): Promise<void> {
+        if (!this.postProcessors.length) return;
         this.debugger('Running postprocessors');
         for (const processor of this.postProcessors) {
             await Promise.resolve(processor(context.request, context.response));
@@ -150,6 +151,8 @@ export class ServiceInvoker {
     }
 
     private processResponseHeaders(context: ServiceContext) {
+        if (context.response.headersSent) return;
+
         if (this.serviceMethod.resolvedLanguages) {
             if (this.serviceMethod.httpMethod === HttpMethod.GET) {
                 this.debugger('Adding response header vary: Accept-Language');
@@ -167,32 +170,34 @@ export class ServiceInvoker {
     }
 
     private async sendValue(value: any, context: ServiceContext) {
-        if (value === NoResponse || typeof value === "number" || typeof value === "string" || typeof value === "boolean" || typeof value === "undefined" || value === null) {
-            if (this.postProcessors.length) {
-                await this.runPostProcessors(context);
-            }
-            this.processResponseHeaders(context);
-        }
-
         if (value !== NoResponse) {
             this.debugger('Sending response value: %o', value);
 
             switch (typeof value) {
                 case 'number':
                 case 'boolean':
+                case 'string':
+                    await this.runPostProcessors(context);
+                    this.processResponseHeaders(context);
+
                     context.response.send(value.toString());
                     break;
-                case 'string':
-                    context.response.send(value);
-                    break;
                 case 'undefined':
-                    if (!context.response.headersSent)
+                    if (!context.response.headersSent) {
+                        await this.runPostProcessors(context);
+                        this.processResponseHeaders(context);
+
                         context.response.sendStatus(204);
+                    }
                     break;
                 default:
-                    value === null
-                        ? context.response.send(value)
-                        : await this.sendComplexValue(context, value);
+                    if (value === null) {
+                        await this.runPostProcessors(context);
+                        this.processResponseHeaders(context);
+                        context.response.send(value);
+                    } else {
+                        await this.sendComplexValue(context, value);
+                    }
             }
         } else {
             this.debugger('Do not send any response value');
@@ -214,6 +219,9 @@ export class ServiceInvoker {
             await this.sendValue(val, context);
         }
         else {
+            await this.runPostProcessors(context);
+            this.processResponseHeaders(context);
+
             this.debugger('Sending a json value: %j', value);
             context.response.json(value);
         }
