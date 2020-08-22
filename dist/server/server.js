@@ -104,9 +104,9 @@ class Server {
     /**
      * Return all paths accepted by the Server
      */
-    static getPaths() {
+    static getPaths(router) {
         const result = new Array();
-        server_container_1.ServerContainer.get().getPaths().forEach(value => {
+        server_container_1.ServerContainer.get().getPaths(router).forEach(value => {
             result.push(value);
         });
         return result;
@@ -144,9 +144,9 @@ class Server {
      * Return the set oh HTTP verbs configured for the given path
      * @param servicePath The path to search HTTP verbs
      */
-    static getHttpMethods(servicePath) {
+    static getHttpMethods(router, servicePath) {
         const result = new Array();
-        server_container_1.ServerContainer.get().getHttpMethods(servicePath).forEach(value => {
+        server_container_1.ServerContainer.get().getHttpMethods(router, servicePath).forEach(value => {
             result.push(value);
         });
         return result;

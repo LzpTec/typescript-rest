@@ -48,13 +48,12 @@ class ServerContainer {
         this.authenticator = new Map();
         this.serviceFactory = new DefaultServiceFactory();
         this.paramConverters = new Map();
-        this.resolvedPaths = new Map();
         this.debugger = {
             build: debug_1.default('typescript-rest:server-container:build'),
             runtime: debug_1.default('typescript-rest:server-container:runtime')
         };
         this.serverClasses = new Map();
-        this.paths = new Map();
+        this.resolvedPaths = new Map();
         this.pathsResolved = false;
     }
     static get() {
@@ -85,17 +84,19 @@ class ServerContainer {
         }
         return null;
     }
-    getPaths() {
+    getPaths(router) {
         this.resolveAllPaths();
         const result = new Set();
-        this.paths.forEach((value, key) => {
+        const paths = this.resolvedPaths.get(router);
+        paths === null || paths === void 0 ? void 0 : paths.forEach((value, key) => {
             result.add(key);
         });
         return result;
     }
-    getHttpMethods(path) {
+    getHttpMethods(router, path) {
         this.resolveAllPaths();
-        const methods = this.paths.get(path);
+        const paths = this.resolvedPaths.get(router);
+        const methods = paths === null || paths === void 0 ? void 0 : paths.get(path);
         return methods || new Set();
     }
     buildServices(types) {
@@ -181,9 +182,10 @@ class ServerContainer {
         }
     }
     resolveAllPaths() {
+        var _a;
         if (!this.pathsResolved) {
             this.debugger.build('Building the server list of paths');
-            this.paths.clear();
+            (_a = this.resolvedPaths.get(this.router)) === null || _a === void 0 ? void 0 : _a.clear();
             this.serverClasses.forEach(classData => {
                 classData.methods.forEach(method => {
                     if (!method.resolvedPath) {
@@ -230,16 +232,18 @@ class ServerContainer {
             const methodPath = serviceMethod.path.trim();
             resolvedPath = resolvedPath + (methodPath.startsWith('/') ? methodPath : '/' + methodPath);
         }
-        let declaredHttpMethods = this.paths.get(resolvedPath);
+        let paths = this.resolvedPaths.get(this.router);
+        if (!paths) {
+            paths = new Map();
+            this.resolvedPaths.set(this.router, paths);
+        }
+        let declaredHttpMethods = paths.get(resolvedPath);
         if (!declaredHttpMethods) {
             declaredHttpMethods = new Set();
-            this.paths.set(resolvedPath, declaredHttpMethods);
+            paths.set(resolvedPath, declaredHttpMethods);
         }
-        if (declaredHttpMethods.has(serviceMethod.httpMethod) && this.resolvedPaths.get(resolvedPath) === this.router) {
+        if (declaredHttpMethods.has(serviceMethod.httpMethod)) {
             throw Error(`Duplicated declaration for path [${resolvedPath}], method [${serviceMethod.httpMethod}].`);
-        }
-        else {
-            this.resolvedPaths.set(resolvedPath, this.router);
         }
         declaredHttpMethods.add(serviceMethod.httpMethod);
         serviceMethod.resolvedPath = resolvedPath;
@@ -252,9 +256,9 @@ class ServerContainer {
     }
     handleNotAllowedMethods() {
         this.debugger.build('Creating middleware to handle not allowed methods');
-        const paths = this.getPaths();
+        const paths = this.getPaths(this.router);
         paths.forEach((path) => {
-            const supported = this.getHttpMethods(path);
+            const supported = this.getHttpMethods(this.router, path);
             const allowedMethods = new Array();
             supported.forEach((method) => {
                 allowedMethods.push(server_types_1.HttpMethod[method]);

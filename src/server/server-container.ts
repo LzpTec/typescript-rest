@@ -49,7 +49,7 @@ export class ServerContainer {
     };
     private upload: ReturnType<typeof multer>;
     private serverClasses: Map<Function, ServiceClass> = new Map<Function, ServiceClass>();
-    
+
     private resolvedPaths: Map<express.Router, Map<string, Set<HttpMethod>>> = new Map<express.Router, Map<string, Set<HttpMethod>>>();
     private pathsResolved: boolean = false;
 
@@ -192,7 +192,8 @@ export class ServerContainer {
     private resolveAllPaths() {
         if (!this.pathsResolved) {
             this.debugger.build('Building the server list of paths');
-            this.resolvedPaths.clear();
+            this.resolvedPaths.get(this.router)?.clear();
+
             this.serverClasses.forEach(classData => {
                 classData.methods.forEach(method => {
                     if (!method.resolvedPath) {

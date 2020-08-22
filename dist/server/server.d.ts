@@ -37,7 +37,7 @@ export declare class Server {
     /**
      * Return all paths accepted by the Server
      */
-    static getPaths(): Array<string>;
+    static getPaths(router: express.Router): Array<string>;
     /**
      * Register a custom serviceFactory. It will be used to instantiate the service Objects
      * If You plan to use a custom serviceFactory, You must ensure to call this method before any typescript-rest service declaration.
@@ -52,7 +52,7 @@ export declare class Server {
      * Return the set oh HTTP verbs configured for the given path
      * @param servicePath The path to search HTTP verbs
      */
-    static getHttpMethods(servicePath: string): Array<HttpMethod>;
+    static getHttpMethods(router: express.Router, servicePath: string): Array<HttpMethod>;
     /**
      * A string used for signing cookies. This is optional and if not specified,
      * will not parse signed cookies.
