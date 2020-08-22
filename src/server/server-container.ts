@@ -42,7 +42,6 @@ export class ServerContainer {
     public serviceFactory: ServiceFactory = new DefaultServiceFactory();
     public paramConverters: Map<Function, ParameterConverter> = new Map<Function, ParameterConverter>();
     public router: express.Router;
-    public resolvedPaths: Map<string, express.Router> = new Map<string, express.Router>();
 
     private debugger = {
         build: debug('typescript-rest:server-container:build'),
@@ -50,7 +49,8 @@ export class ServerContainer {
     };
     private upload: ReturnType<typeof multer>;
     private serverClasses: Map<Function, ServiceClass> = new Map<Function, ServiceClass>();
-    private paths: Map<string, Set<HttpMethod>> = new Map<string, Set<HttpMethod>>();
+    
+    private resolvedPaths: Map<express.Router, Map<string, Set<HttpMethod>>> = new Map<express.Router, Map<string, Set<HttpMethod>>>();
     private pathsResolved: boolean = false;
 
     private constructor() { }
@@ -82,18 +82,20 @@ export class ServerContainer {
         return null;
     }
 
-    public getPaths(): Set<string> {
+    public getPaths(router: express.Router): Set<string> {
         this.resolveAllPaths();
         const result = new Set<string>();
-        this.paths.forEach((value, key) => {
+        const paths = this.resolvedPaths.get(router);
+        paths?.forEach((value, key) => {
             result.add(key);
         });
         return result;
     }
 
-    public getHttpMethods(path: string): Set<HttpMethod> {
+    public getHttpMethods(router: express.Router, path: string): Set<HttpMethod> {
         this.resolveAllPaths();
-        const methods: Set<HttpMethod> = this.paths.get(path);
+        const paths = this.resolvedPaths.get(router);
+        const methods: Set<HttpMethod> = paths?.get(path);
         return methods || new Set<HttpMethod>();
     }
 
@@ -190,7 +192,7 @@ export class ServerContainer {
     private resolveAllPaths() {
         if (!this.pathsResolved) {
             this.debugger.build('Building the server list of paths');
-            this.paths.clear();
+            this.resolvedPaths.clear();
             this.serverClasses.forEach(classData => {
                 classData.methods.forEach(method => {
                     if (!method.resolvedPath) {
@@ -252,16 +254,22 @@ export class ServerContainer {
             resolvedPath = resolvedPath + (methodPath.startsWith('/') ? methodPath : '/' + methodPath);
         }
 
-        let declaredHttpMethods: Set<HttpMethod> = this.paths.get(resolvedPath);
+        let paths = this.resolvedPaths.get(this.router);
+        if (!paths) {
+            paths = new Map<string, Set<HttpMethod>>();
+            this.resolvedPaths.set(this.router, paths);
+        }
+
+        let declaredHttpMethods: Set<HttpMethod> = paths.get(resolvedPath);
         if (!declaredHttpMethods) {
             declaredHttpMethods = new Set<HttpMethod>();
-            this.paths.set(resolvedPath, declaredHttpMethods);
+            paths.set(resolvedPath, declaredHttpMethods);
         }
-        if (declaredHttpMethods.has(serviceMethod.httpMethod) && this.resolvedPaths.get(resolvedPath) === this.router) {
+
+        if (declaredHttpMethods.has(serviceMethod.httpMethod)) {
             throw Error(`Duplicated declaration for path [${resolvedPath}], method [${serviceMethod.httpMethod}].`);
-        } else {
-            this.resolvedPaths.set(resolvedPath, this.router);
         }
+
         declaredHttpMethods.add(serviceMethod.httpMethod);
         serviceMethod.resolvedPath = resolvedPath;
     }
@@ -275,9 +283,9 @@ export class ServerContainer {
 
     private handleNotAllowedMethods() {
         this.debugger.build('Creating middleware to handle not allowed methods');
-        const paths: Set<string> = this.getPaths();
+        const paths: Set<string> = this.getPaths(this.router);
         paths.forEach((path) => {
-            const supported: Set<HttpMethod> = this.getHttpMethods(path);
+            const supported: Set<HttpMethod> = this.getHttpMethods(this.router, path);
             const allowedMethods: Array<string> = new Array<string>();
             supported.forEach((method: HttpMethod) => {
                 allowedMethods.push(HttpMethod[method]);

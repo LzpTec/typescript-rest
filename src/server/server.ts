@@ -95,9 +95,9 @@ export class Server {
     /**
      * Return all paths accepted by the Server
      */
-    public static getPaths(): Array<string> {
+    public static getPaths(router: express.Router): Array<string> {
         const result = new Array<string>();
-        ServerContainer.get().getPaths().forEach(value => {
+        ServerContainer.get().getPaths(router).forEach(value => {
             result.push(value);
         });
 
@@ -138,9 +138,9 @@ export class Server {
      * Return the set oh HTTP verbs configured for the given path
      * @param servicePath The path to search HTTP verbs
      */
-    public static getHttpMethods(servicePath: string): Array<HttpMethod> {
+    public static getHttpMethods(router: express.Router, servicePath: string): Array<HttpMethod> {
         const result = new Array<HttpMethod>();
-        ServerContainer.get().getHttpMethods(servicePath).forEach(value => {
+        ServerContainer.get().getHttpMethods(router, servicePath).forEach(value => {
             result.push(value);
         });
 
