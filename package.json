@@ -1,6 +1,6 @@
 {
   "name": "typescript-rest",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "A Library to create RESTFul APIs with Typescript",
   "author": "Thiago da Rosa de Bustamante <thiago@cruxframework.org>",
   "keywords": [
@@ -19,7 +19,7 @@
     "start": "tsc -w",
     "build": "npm run clean && tsc",
     "clean": "rimraf dist",
-    "prepare": "rimraf dist && tsc",
+    "prepublish": "rimraf dist && tsc",
     "lint": "tslint ./src/**/*.ts ./test/**/*.ts",
     "lint:fix": "tslint --fix ./src/**/*.ts ./test/**/*.ts -t verbose",
     "pretest": "cross-env NODE_ENV=test npm run build && npm run lint",
