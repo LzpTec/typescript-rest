@@ -17,7 +17,7 @@ export declare class ServerContainer {
     fileDest: string;
     fileFilter: (req: Express.Request, file: Express.Multer.File, callback: (error: Error, acceptFile: boolean) => void) => void;
     fileLimits: FileLimits;
-    errorFactory: (requestRoles: Array<string>, roles: Array<string>) => Errors.HttpError;
+    errorFactory: (requestRoles: Array<string>, roles: Array<string>, req: express.Request) => Errors.HttpError;
     ignoreNextMiddlewares: boolean;
     authenticator: Map<string, ServiceAuthenticator>;
     serviceFactory: ServiceFactory;

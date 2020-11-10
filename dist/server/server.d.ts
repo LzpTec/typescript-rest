@@ -91,7 +91,7 @@ export declare class Server {
      * Set the function to create the Error on Auth fail.
      * @param errorFactory The Error Factory
      */
-    static setAuthError(errorFactory: (requestRoles: Array<string>, roles: Array<string>) => HttpError): void;
+    static setAuthErrorFactory(errorFactory: (requestRoles: Array<string>, roles: Array<string>, req: express.Request) => HttpError): void;
     /**
      * Adds a converter for param values to have an ability to intercept the type that actually will be passed to service
      * @param converter The converter

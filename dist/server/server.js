@@ -213,7 +213,7 @@ class Server {
      * Set the function to create the Error on Auth fail.
      * @param errorFactory The Error Factory
      */
-    static setAuthError(errorFactory) {
+    static setAuthErrorFactory(errorFactory) {
         if (!Server.locked) {
             serverDebugger('Setting a new AuthError: %j', errorFactory.toString());
             server_container_1.ServerContainer.get().errorFactory = errorFactory;

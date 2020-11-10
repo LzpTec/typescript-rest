@@ -345,7 +345,7 @@ class ServerContainer {
                 next();
             }
             else {
-                throw this.errorFactory ? this.errorFactory(requestRoles, roles) : new Errors.ForbiddenError();
+                throw this.errorFactory ? this.errorFactory(requestRoles, roles, req) : new Errors.ForbiddenError();
             }
         };
     }
