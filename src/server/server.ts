@@ -216,7 +216,7 @@ export class Server {
      * Set the function to create the Error on Auth fail.
      * @param errorFactory The Error Factory
      */
-    public static setAuthError(errorFactory: (requestRoles: Array<string>, roles: Array<string>) => HttpError) {
+    public static setAuthErrorFactory(errorFactory: (requestRoles: Array<string>, roles: Array<string>, req: express.Request) => HttpError) {
         if (!Server.locked) {
             serverDebugger('Setting a new AuthError: %j', errorFactory.toString());
             ServerContainer.get().errorFactory = errorFactory;

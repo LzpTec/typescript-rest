@@ -37,7 +37,7 @@ export class ServerContainer {
     public fileDest: string;
     public fileFilter: (req: Express.Request, file: Express.Multer.File, callback: (error: Error, acceptFile: boolean) => void) => void;
     public fileLimits: FileLimits;
-    public errorFactory: (requestRoles: Array<string>, roles: Array<string>) => Errors.HttpError;
+    public errorFactory: (requestRoles: Array<string>, roles: Array<string>, req: express.Request) => Errors.HttpError;
     public ignoreNextMiddlewares: boolean = false;
     public authenticator: Map<string, ServiceAuthenticator> = new Map<string, ServiceAuthenticator>();
     public serviceFactory: ServiceFactory = new DefaultServiceFactory();
@@ -377,7 +377,7 @@ export class ServerContainer {
             if (requestRoles.some((role: string) => roles.indexOf(role) >= 0)) {
                 next();
             } else {
-                throw this.errorFactory ? this.errorFactory(requestRoles, roles) : new Errors.ForbiddenError();
+                throw this.errorFactory ? this.errorFactory(requestRoles, roles, req) : new Errors.ForbiddenError();
             }
         };
     }
