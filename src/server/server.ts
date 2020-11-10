@@ -6,6 +6,7 @@ import * as fs from 'fs-extra';
 import 'multer';
 import * as path from 'path';
 import YAML from 'yamljs';
+import { HttpError } from './model/errors';
 import {
     FileLimits, HttpMethod, ParameterConverter,
     ServiceAuthenticator, ServiceFactory
@@ -208,6 +209,17 @@ export class Server {
         if (!Server.locked) {
             serverDebugger('Setting a new fileLimits: %j', limit);
             ServerContainer.get().fileLimits = limit;
+        }
+    }
+
+    /**
+     * Set the function to create the Error on Auth fail.
+     * @param errorFactory The Error Factory
+     */
+    public static setAuthError(errorFactory: (requestRoles: Array<string>, roles: Array<string>) => HttpError) {
+        if (!Server.locked) {
+            serverDebugger('Setting a new AuthError: %j', errorFactory.toString());
+            ServerContainer.get().errorFactory = errorFactory;
         }
     }
 

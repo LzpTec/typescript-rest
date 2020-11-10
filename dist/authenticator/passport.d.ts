@@ -1,5 +1,5 @@
 import * as express from 'express';
-import * as passport from 'passport';
+import passport from 'passport';
 import { ServiceAuthenticator } from '../server/model/server-types';
 export interface PassportAuthenticatorOptions {
     authOptions?: passport.AuthenticateOptions;

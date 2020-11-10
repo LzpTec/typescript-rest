@@ -2,6 +2,7 @@
 /// <reference types="passport" />
 import * as express from 'express';
 import 'multer';
+import { HttpError } from './model/errors';
 import { FileLimits, HttpMethod, ParameterConverter, ServiceAuthenticator, ServiceFactory } from './model/server-types';
 /**
  * The Http server main class.
@@ -86,6 +87,11 @@ export declare class Server {
      * @param limit The data limit
      */
     static setFileLimits(limit: FileLimits): void;
+    /**
+     * Set the function to create the Error on Auth fail.
+     * @param errorFactory The Error Factory
+     */
+    static setAuthError(errorFactory: (requestRoles: Array<string>, roles: Array<string>) => HttpError): void;
     /**
      * Adds a converter for param values to have an ability to intercept the type that actually will be passed to service
      * @param converter The converter

@@ -1,1 +1,1 @@
-export declare function union<T>(array: T[], array2: T[]): T[];
+export declare function union<T>(array: Array<T>, array2: Array<T>): T[];

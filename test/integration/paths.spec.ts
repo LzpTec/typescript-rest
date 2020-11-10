@@ -101,12 +101,12 @@ describe('Paths Tests', () => {
 
     describe('Server', () => {
         it('should provide a catalog containing the exposed paths', (done) => {
-            expect(Server.getPaths()).to.include.members(['/pathtest', '/pathtest2',
+            expect(Server.getPaths(router)).to.include.members(['/pathtest', '/pathtest2',
                 '/methodpath', '/pathtest2/secondpath', '/superclasspath/overload/:id']);
-            expect(Server.getPaths()).to.not.include.members(['/overload/:id']);
-            expect(Server.getHttpMethods('/pathtest')).to.have.members([HttpMethod.GET]);
-            expect(Server.getHttpMethods('/pathtest2/secondpath')).to.have.members([HttpMethod.GET]);
-            expect(Server.getHttpMethods('/superclasspath/overload/:id')).to.have.members([HttpMethod.GET, HttpMethod.PUT]);
+            expect(Server.getPaths(router)).to.not.include.members(['/overload/:id']);
+            expect(Server.getHttpMethods(router, '/pathtest')).to.have.members([HttpMethod.GET]);
+            expect(Server.getHttpMethods(router, '/pathtest2/secondpath')).to.have.members([HttpMethod.GET]);
+            expect(Server.getHttpMethods(router, '/superclasspath/overload/:id')).to.have.members([HttpMethod.GET, HttpMethod.PUT]);
             done();
         });
     });
@@ -161,11 +161,13 @@ describe('Paths Tests', () => {
     });
 });
 
+let router: any;
 let server: any;
 export function startApi(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
         const app: express.Application = express();
         app.set('env', 'test');
+        router = app;
         Server.buildServices(app, PathTestService, PathOnlyOnMethodTestService,
             SubPathTestService, SuperClassService);
         server = app.listen(5674, (err?: any) => {

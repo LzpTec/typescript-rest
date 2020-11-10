@@ -2,7 +2,7 @@
 
 import * as chai from 'chai';
 import express from 'express';
-import klona from 'klona';
+import { klona } from 'klona';
 import 'mocha';
 import request from 'request';
 import * as YAML from 'yamljs';

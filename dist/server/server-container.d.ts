@@ -2,6 +2,7 @@
 /// <reference types="multer" />
 /// <reference types="passport" />
 import * as express from 'express';
+import * as Errors from './model/errors';
 import { ServiceClass, ServiceMethod } from './model/metadata';
 import { FileLimits, HttpMethod, ParameterConverter, ServiceAuthenticator, ServiceFactory } from './model/server-types';
 export declare class DefaultServiceFactory implements ServiceFactory {
@@ -16,6 +17,7 @@ export declare class ServerContainer {
     fileDest: string;
     fileFilter: (req: Express.Request, file: Express.Multer.File, callback: (error: Error, acceptFile: boolean) => void) => void;
     fileLimits: FileLimits;
+    errorFactory: (requestRoles: Array<string>, roles: Array<string>) => Errors.HttpError;
     ignoreNextMiddlewares: boolean;
     authenticator: Map<string, ServiceAuthenticator>;
     serviceFactory: ServiceFactory;

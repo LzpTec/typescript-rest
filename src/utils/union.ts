@@ -1,4 +1,4 @@
-export function union<T>(array: T[], array2: T[]) {
+export function union<T>(array: Array<T>, array2: Array<T>) {
     if (!array || !Array.isArray(array)) {
         return array2 || [];
     } else if (!array2 || !Array.isArray(array2)) {
@@ -7,6 +7,6 @@ export function union<T>(array: T[], array2: T[]) {
 
     const conc = array.concat(array2);
     return conc.filter((i, p) => {
-        return conc.indexOf(i) === p
+        return conc.indexOf(i) === p;
     });
 }
